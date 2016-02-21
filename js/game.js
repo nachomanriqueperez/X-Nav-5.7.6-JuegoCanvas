@@ -75,12 +75,24 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
+function areTheyTouching(char1,char2){
+	if (char1.x <= (char2.x + 32)
+	    && char2.x <= (char1.x + 32)
+            && char1.y <= (char2.y + 32) 	
+	    && char2.y <= (char1.y + 32)){
+		return true;
+        }else{
+	        return false;
+        }
+		
+};
+
 // Reset the game when the player catches a princess
 var reset = function () {
 	hero.x = canvas.width / 2;
 	hero.y = canvas.height / 2;
 
-	if (princessesCaught>1){
+	if (princessesCaught>9){
 		stage =2;
 	};
 
@@ -94,24 +106,13 @@ var reset = function () {
 
 			   monster.x = 32 + (Math.random() * (canvas.width - 90));
 			   monster.y = 32 + (Math.random() * (canvas.height - 98));
-		       stone.x = 32 + (Math.random() * (canvas.width - 90));
+		           stone.x = 32 + (Math.random() * (canvas.width - 90));
 			   stone.y = 32 + (Math.random() * (canvas.height - 98));
-			   if (princess.x <= (stone.x + 16)
-			   && stone.x <= (princess.x + 16)
-			   && princess.y <= (stone.y + 16)
-			   && stone.y <= (princess.y + 16)
-			   && princess.x <= (monster.x + 16)
-			   && monster.x <= (princess.x + 16)
-			   && princess.y <= (monster.y + 16)
-			   && monster.y <= (princess.y + 16)
-		       && monster.x <= (stone.x + 16)
-			   && stone.x <= (monster.x + 16)
-			   && monster.y <= (stone.y + 16)
-			   && stone.y <= (monster.y + 16)
-			   ){
-		           solape = true;
+			   if(areTheyTouching(princess,stone) && areTheyTouching(princess,monster)
+			      && areTheyTouching(monster,stone)){
+			   	solape = true;
 			   }else{
-				   solape = false;
+			        solape = false;
 			   }
 		}
 	}else{
@@ -128,24 +129,15 @@ var reset = function () {
 			   monster2.y = 32 + (Math.random() * (canvas.height - 98));
 			   monster3.x = 32 + (Math.random() * (canvas.width - 90));
 			   monster3.y = 32 + (Math.random() * (canvas.height - 98));
-		       stone.x = 32 + (Math.random() * (canvas.width - 90));
+		           stone.x = 32 + (Math.random() * (canvas.width - 90));
 			   stone.y = 32 + (Math.random() * (canvas.height - 98));
-			   if (princess.x <= (stone.x + 16)
-			   && stone.x <= (princess.x + 16)
-			   && princess.y <= (stone.y + 16)
-			   && stone.y <= (princess.y + 16)
-			   && princess.x <= (monster.x + 16)
-			   && monster1.x <= (princess.x + 16)
-			   && princess.y <= (monster1.y + 16)
-			   && monster1.y <= (princess.y + 16)
-		       && monster1.x <= (stone.x + 16)
-			   && stone.x <= (monster1.x + 16)
-			   && monster1.y <= (stone.y + 16)
-			   && stone.y <= (monster1.y + 16)
-			   ){
-		           solape = true;
+			   if(areTheyTouching(princess,stone) && areTheyTouching(princess,monster1)
+			      && areTheyTouching(monster1,stone)&& areTheyTouching(princess,monster2)
+			      && areTheyTouching(monster2,stone)&& areTheyTouching(princess,monster3)
+			      && areTheyTouching(monster3,stone)){
+			   	solape = true;
 			   }else{
-				   solape = false;
+			        solape = false;
 			   }
 		}
 	};
@@ -169,54 +161,48 @@ var update = function (modifier) {
 
 	// Are they touching?
 	if (
-		hero.x <= (princess.x + 32)
-		&& princess.x <= (hero.x + 32)
-		&& hero.y <= (princess.y + 32)
-		&& princess.y <= (hero.y + 32)
+		areTheyTouching(hero,princess)
 	) {
 		++princessesCaught;
 		
 		reset();
 	}
-    //Are the hero touching a stone?
-	
+        //Are the hero touching a stone?
+	if (
+		areTheyTouching(hero,stone)
+                && 40 in keysDown ||
+		areTheyTouching(hero,stone)
+                && 39 in keysDown
+		
+	) {
+		hero.x -= 1;
+		hero.y -= 1;
+	}
+
+	if (
+		areTheyTouching(hero,stone)
+                && 38 in keysDown ||
+		areTheyTouching(hero,stone)
+                && 37 in keysDown
+		
+	) {
+		hero.x += 1;
+		hero.y += 1;
+	}
 
 	//Is the hero dead?
-	if (hero.x <= (monster.x + 32)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y + 32)
-		&& monster.y <= (hero.y + 32)
-	) {
-		heroDeads++;
-		reset();
+	function heroDie(monster){
+		if(areTheyTouching(hero,monster)
+		) {
+			heroDeads++;
+			reset();
+		}	
 	}
-
-	if (hero.x <= (monster1.x + 32)
-		&& monster1.x <= (hero.x + 32)
-		&& hero.y <= (monster1.y + 32)
-		&& monster1.y <= (hero.y + 32)
-	) {
-		heroDeads++;
-		reset();
-	}
-
-	if (hero.x <= (monster2.x + 32)
-		&& monster2.x <= (hero.x + 32)
-		&& hero.y <= (monster2.y + 32)
-		&& monster2.y <= (hero.y + 32)
-	) {
-		heroDeads++;
-		reset();
-	}
-
-	if (hero.x <= (monster3.x + 32)
-		&& monster3.x <= (hero.x + 32)
-		&& hero.y <= (monster3.y + 32)
-		&& monster3.y <= (hero.y + 32)
-	) {
-		heroDeads++;
-		reset();
-	}
+	
+	heroDie(monster);
+	heroDie(monster1);
+	heroDie(monster2);
+	heroDie(monster3);
 };
 
 // Draw everything
